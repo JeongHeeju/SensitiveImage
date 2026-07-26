@@ -13,7 +13,17 @@ This repository has been prepared for double-anonymous review. Author names, aff
 ```text
 ├── README.md
 ├── privacy_sensitivity_annotation.csv     # 4,999 annotation records
-├── clip_vitb16_embeddings.npz             # CLIP ViT-B/16 embeddings, shape (4999, 512)
+├── embeddings/
+│   ├── clip_vitb16_embeddings.npz         # CLIP ViT-B/16 embeddings, shape (4999, 512)
+│   ├── dinov2_vitl14_embeddings.npz       # DINOv2 ViT-L/14 embeddings, shape (4999, 1024)
+│   └── places365_resnet50_embeddings.npz  # Places365 ResNet-50 embeddings, shape (4999, 2048)
+├── code/
+│   ├── train_frozen.py                    # frozen-representation classifiers + baselines (Table 3)
+│   ├── dedup_fold_utils.py                # near-duplicate detection for group-aware CV
+│   ├── clip_finetune.py                   # CLIP fine-tuning (Table 4)
+│   ├── densenet_finetune.py               # DenseNet-121 fine-tuning (Table 4)
+│   └── efficientnet_finetune.py           # EfficientNet-B0 fine-tuning (Table 4)
+├── requirements.txt                       # Python dependencies
 ├── sample_annotation.csv                  # 10 sample annotations for reviewer reference
 └── sample_images/                         # 10 anonymized sample images for reviewer reference
 ```
