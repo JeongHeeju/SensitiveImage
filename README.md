@@ -1,10 +1,10 @@
 # Privacy Sensitivity Annotation Dataset for Social Media Images
 
-This repository contains annotation labels and pre-computed image embeddings for the accompanying submitted AAAI AIES'26 paper.
+This repository contains annotation labels and pre-computed image embeddings for the accompanying submitted AAAI-27 paper.
 
-The dataset provides annotations for 4,999 Korean social media images along three independent ordinal privacy sensitivity dimensions: identifiability, location sensitivity, and activity sensitivity. It also includes privacy-relevant information types, blur presence, sharing allowance judgments, and image category labels.
+The dataset provides annotations for 4,999 Korean social media images along three distinct ordinal privacy sensitivity dimensions: identifiability, location sensitivity, and activity sensitivity. It also includes privacy-relevant information types, blur presence, sharing allowance judgments, and image category labels.
 
-Due to the sensitive nature of the image content, we do not release the original images. Instead, we release annotation labels and pre-computed CLIP ViT-B/16 image embeddings. For reviewer reference only, this repository also includes 10 anonymized sample images with corresponding annotations.
+Due to the sensitive nature of the image content, we do not release the original images. Instead, we release annotation labels and pre-computed image embeddings (CLIP ViT-B/16, DINOv2 ViT-L/14, and Places365 ResNet-50). For reviewer reference only, this repository also includes 10 anonymized sample images with corresponding annotations.
 
 This repository has been prepared for double-anonymous review. Author names, affiliations, contact information, personal repository links, and institution-specific paths are omitted.
 
@@ -30,7 +30,7 @@ This repository has been prepared for double-anonymous review. Author names, aff
 
 ## Data
 
-**TL;DR:** The annotation table is `privacy_sensitivity_annotation.csv`, and the image embeddings are `clip_vitb16_embeddings.npz`. Match records by `image_id`.
+**TL;DR:** The annotation table is `privacy_sensitivity_annotation.csv`, and pre-computed image embeddings are in `embeddings/`. Match records by `image_path`.
 
 ### Annotation Table
 
@@ -39,27 +39,31 @@ Each row in `privacy_sensitivity_annotation.csv` corresponds to one image record
 The columns are:
 
 ```text
-image_id              : Image identifier matching image_ids in the embeddings file.
-information_type      : 8-dimensional binary vector of privacy-relevant information types.
-identifiability       : Ordinal score (0–2) for individual identifiability.
-location_sensitivity  : Ordinal score (0–2) for privacy harm of disclosing the depicted location.
-activity_sensitivity  : Ordinal score (0–2) for privacy harm of the depicted or implied activity.
-blur_presence         : Binary label for the presence of intentional privacy-protective modification.
-sharing_allowance     : 6-dimensional binary vector of audience tiers with whom sharing is appropriate.
-high_level_category   : High-level retrieval category used during data collection.
-subcategory           : More specific retrieval subcategory.
+image_path              : Image identifier matching image_ids in the embeddings file.
+information_type        : 8-dimensional binary vector of privacy-relevant information types.
+identifiability_gold    : Ordinal score (0–2) for individual identifiability.
+location_gold           : Ordinal score (0–2) for privacy harm of disclosing the depicted location.
+activity_gold           : Ordinal score (0–2) for privacy harm of the depicted or implied activity.
+blur_presence           : Binary label for the presence of intentional privacy-protective modification.
+sharing_gold            : 6-dimensional binary vector of audience tiers with whom sharing is appropriate.
+high_level_category     : High-level retrieval category used during data collection.
+subcategory             : More specific retrieval subcategory.
 ```
 
 ### Image Embeddings
 
-`clip_vitb16_embeddings.npz` contains two arrays:
-
+The `embeddings/` directory contains three pre-computed embedding files, each with two arrays:
 ```text
-image_ids   : shape (4999,), image identifiers matching the image_id column.
-embeddings  : shape (4999, 512), CLIP ViT-B/16 image embeddings.
+image_ids   : shape (4999,), image identifiers matching the image_path column.
+embeddings  : image embeddings.
 ```
+| File | Model | Embedding dim |
+|------|-------|---------------|
+| clip_vitb16_embeddings.npz | CLIP ViT-B/16 | 512 |
+| dinov2_vitl14_embeddings.npz | DINOv2 ViT-L/14 | 1024 |
+| places365_resnet50_embeddings.npz | Places365 ResNet-50 | 2048 |
 
-The `i`-th row of `embeddings` corresponds to `image_ids[i]`.
+The `i`-th row of `embeddings` corresponds to `image_ids[i]`. Image identifiers are matched after removing file extensions (e.g., `img1` and `img1.jpg` are treated as the same).
 
 ### Sample Images for Reviewer Reference
 
@@ -71,6 +75,37 @@ Visible faces and identifying cues in these samples have been anonymized where a
 
 The columns of `sample_annotation.csv` follow the same schema as `privacy_sensitivity_annotation.csv`.
 
+## Setup and Reproduction
+
+Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+**Frozen-representation experiments (Table 3) and baselines** — fully reproducible with the provided embeddings:
+```bash
+python code/train_frozen.py \
+    --gold_csv privacy_sensitivity_annotation.csv \
+    --clip_npz embeddings/clip_vitb16_embeddings.npz \
+    --dinov2_npz embeddings/dinov2_vitl14_embeddings.npz \
+    --places365_npz embeddings/places365_resnet50_embeddings.npz \
+    --seed 42
+```
+
+**Fine-tuning experiments (Table 4)** — require the original images, which are not released (see Data Release Policy):
+```bash
+python code/clip_finetune.py \
+    --gold_csv privacy_sensitivity_annotation.csv \
+    --image_dir <path_to_images> \
+    --clip_embedding_npz embeddings/clip_vitb16_embeddings.npz
+```
+(`densenet_finetune.py` and `efficientnet_finetune.py` follow the same interface.)
+
+All experiments use 5-fold cross-validation with group-aware splitting and a fixed seed (42). The `clip_embedding_npz` argument in fine-tuning is used only for near-duplicate detection during fold assignment.
+
+## Environment
+
+Python 3.10, PyTorch 2.1, scikit-learn 1.3, transformers 4.x, torchvision, on an NVIDIA RTX 4090 GPU. See `requirements.txt` for details.
 
 ## Data Release Policy
 
