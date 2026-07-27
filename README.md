@@ -24,6 +24,8 @@ This repository has been prepared for double-anonymous review. Author names, aff
 │   ├── densenet_finetune.py               # DenseNet-121 fine-tuning (Table 4)
 │   └── efficientnet_finetune.py           # EfficientNet-B0 fine-tuning (Table 4)
 ├── requirements.txt                       # Python dependencies
+├── annotator1_raw.csv                     # raw labels from annotator 1
+├── annotator2_raw.csv                     # raw labels from annotator 2
 ├── sample_annotation.csv                  # 10 sample annotations for reviewer reference
 └── sample_images/                         # 10 anonymized sample images for reviewer reference
 ```
@@ -65,6 +67,10 @@ embeddings  : image embeddings.
 
 The `i`-th row of `embeddings` corresponds to `image_ids[i]`. Image identifiers are matched after removing file extensions (e.g., `img1` and `img1.jpg` are treated as the same).
 
+### Individual Annotator Labels
+
+`annotator1_raw.csv` and `annotator2_raw.csv` contain the raw labels from each of the two annotators before aggregation. They are provided to support the aggregation-robustness analysis (Appendix B) and are not required for the main experiments. The columns are `image_path`, `information_type`, `identifiability`, `activity_sensitivity`, `location_sensitivity`, `blur_presence`, and `sharing_allowance`.
+
 ### Sample Images for Reviewer Reference
 
 To help reviewers understand the annotation schema, we include 10 representative sample images in `sample_images/` along with their annotations in `sample_annotation.csv`.
@@ -91,6 +97,8 @@ python code/train_frozen.py \
     --places365_npz embeddings/places365_resnet50_embeddings.npz \
     --seed 42
 ```
+**Fine-tuning experiments (Table 4)** — these scripts require the original images (`--image_dir`), which are **not released** due to the sensitive 
+nature of the content. They are provided for transparency but **cannot be run with the released files alone**:
 
 **Fine-tuning experiments (Table 4)** — require the original images, which are not released (see Data Release Policy):
 ```bash
@@ -101,15 +109,16 @@ python code/clip_finetune.py \
 ```
 (`densenet_finetune.py` and `efficientnet_finetune.py` follow the same interface.)
 
-All experiments use 5-fold cross-validation with group-aware splitting and a fixed seed (42). The `clip_embedding_npz` argument in fine-tuning is used only for near-duplicate detection during fold assignment.
+All experiments use 5-fold cross-validation with group-aware splitting and a fixed seed (42). The `clip_embedding_npz` argument in fine-tuning is used only for exact-duplicate detection during fold assignment.
 
 ## Environment
 
-Python 3.10, PyTorch 2.1, scikit-learn 1.3, transformers 4.x, torchvision, on an NVIDIA RTX 4090 GPU. See `requirements.txt` for details.
+Experiments were run with Python 3.11, PyTorch 2.10.0 (CUDA 12.8), torchvision 0.25.0, transformers 5.6.2, and scikit-learn 1.8.0, on an NVIDIA RTX 4090 GPU. See `requirements.txt` for dependencies.
 
 ## Data Release Policy
 
-Since the original images may contain personally sensitive information, the original images are not publicly released. For review purposes, we provide image embeddings and annotation labels for a limited subset of samples. The full dataset will be shared in the form of image embeddings upon request.
+Since the original images may contain personally sensitive information, the original images are not publicly released. For review purposes, we provide image embeddings and annotation labels for a limited subset of samples. The image embeddings and annotation labels needed to reproduce the 
+frozen-representation results are included in this repository. Original images are not released due to their sensitive content.
 
 ## Ethical Use
 
