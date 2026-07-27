@@ -19,7 +19,7 @@ This repository has been prepared for double-anonymous review. Author names, aff
 │   └── places365_resnet50_embeddings.npz  # Places365 ResNet-50 embeddings, shape (4999, 2048)
 ├── code/
 │   ├── train_frozen.py                    # frozen-representation classifiers + baselines (Table 3)
-│   ├── dedup_fold_utils.py                # near-duplicate detection for group-aware CV
+│   ├── dedup_fold_utils.py                # exact-duplicate detection for group-aware CV
 │   ├── clip_finetune.py                   # CLIP fine-tuning (Table 4)
 │   ├── densenet_finetune.py               # DenseNet-121 fine-tuning (Table 4)
 │   └── efficientnet_finetune.py           # EfficientNet-B0 fine-tuning (Table 4)
