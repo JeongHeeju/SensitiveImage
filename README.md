@@ -52,6 +52,30 @@ high_level_category     : High-level retrieval category used during data collect
 subcategory             : More specific retrieval subcategory.
 ```
 
+The `information_type` and `sharing_gold` fields are stored as string-encoded
+integer lists (e.g., `"[1,0,1,0,0,0,0,0]"`) and can be parsed with
+`ast.literal_eval`.
+ 
+The `information_type` vector follows this order:
+1. personal identity and sensitive information
+2. social relations
+3. location information
+4. body and appearance
+5. personal preferences
+6. socio-cultural sensitive information
+7. risk- and crime-related information
+8. other
+The `sharing_gold` vector follows this order:
+1. no sharing (not shared with anyone)
+2. close relations (e.g., family, partner)
+3. general relations (e.g., friends, colleagues)
+4. acquaintances (people one knows but is not in frequent contact with)
+5. public (openly visible to anyone)
+6. broadcast media (very wide disclosure through mass media)
+`high_level_category` and `subcategory` describe the hashtag-retrieval strata
+used during data collection and are **not** used as model inputs or prediction
+targets.
+
 ### Image Embeddings
 
 The `embeddings/` directory contains three pre-computed embedding files, each with two arrays:
