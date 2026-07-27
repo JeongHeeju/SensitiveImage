@@ -100,7 +100,6 @@ python code/train_frozen.py \
 **Fine-tuning experiments (Table 4)** — these scripts require the original images (`--image_dir`), which are **not released** due to the sensitive 
 nature of the content. They are provided for transparency but **cannot be run with the released files alone**:
 
-**Fine-tuning experiments (Table 4)** — require the original images, which are not released (see Data Release Policy):
 ```bash
 python code/clip_finetune.py \
     --gold_csv privacy_sensitivity_annotation.csv \
