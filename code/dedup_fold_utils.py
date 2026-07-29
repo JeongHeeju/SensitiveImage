@@ -1,18 +1,19 @@
 """
 dedup_fold_utils.py
 
-CLIP 임베딩을 이용해 완전 동일(bit-identical) 이미지를 탐지하고,
-cross-validation fold 배정 시 중복 이미지가 서로 다른 fold에 나뉘지
-않도록(train/test leakage 방지) group id를 생성하는 유틸리티.
+Utility for detecting bit-identical (exact-duplicate) images using CLIP
+embeddings and generating group ids so that duplicate images are not split
+across different folds during cross-validation (preventing train/test leakage).
 
-사용법:
+Usage:
     from dedup_fold_utils import build_group_ids
 
     group_ids = build_group_ids(
         image_keys=valid_df["img_key"].tolist(),
         clip_embedding_npz="clip_vitb16_embeddings.npz",
     )
-    # group_ids[i] : valid_df의 i번째 행이 속한 그룹 id (중복 이미지는 같은 id 공유)
+    # group_ids[i] : the group id of the i-th row in valid_df
+    #                (duplicate images share the same id)
 
     from sklearn.model_selection import StratifiedGroupKFold
     sgkf = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=seed)
@@ -27,22 +28,23 @@ import numpy as np
 
 
 def _normalize_key(name: str) -> str:
-    """파일 확장자를 제거해서 'img123.jpg' -> 'img123' 형태로 통일."""
+    """Remove the file extension to normalize 'img123.jpg' -> 'img123'."""
     name = str(name)
     return re.sub(r"\.(jpg|jpeg|png)$", "", name, flags=re.IGNORECASE)
 
 
 def find_exact_duplicate_groups(clip_embedding_npz: str):
     """
-    CLIP 임베딩 파일에서 bit-identical한 벡터들을 그룹핑한다.
+    Group bit-identical vectors in the CLIP embedding file.
 
     Returns
     -------
     key_to_group : dict[str, int]
-        정규화된 이미지 키 -> 그룹 id 매핑.
-        중복이 없는 이미지도 자기 자신만 속한 고유 그룹 id를 가진다.
+        Mapping from normalized image key -> group id.
+        An image with no duplicates forms its own singleton group.
     n_duplicate_groups : int
-        2장 이상이 뭉친 실제 중복 그룹 개수 (로그/검증용).
+        Number of actual duplicate groups containing two or more images
+        (for logging/verification).
     """
     data = np.load(clip_embedding_npz, allow_pickle=True)
     embeddings = data["embeddings"].astype(np.float32)
@@ -69,27 +71,28 @@ def find_exact_duplicate_groups(clip_embedding_npz: str):
 
 def build_group_ids(image_keys, clip_embedding_npz: str):
     """
-    주어진 image_keys 순서에 맞춰 group id 배열을 만든다.
-    CLIP 임베딩에서 발견되지 않는 키(예외 상황)는 각자 고유 그룹으로 취급한다.
+    Build a group id array aligned with the given image_keys order.
+    Keys not found in the CLIP embeddings (edge cases) are each treated
+    as their own unique group.
 
     Parameters
     ----------
     image_keys : list[str]
-        StratifiedGroupKFold에 넣을 X, y와 같은 순서의 이미지 식별자
-        (확장자 유무는 자동으로 정규화됨).
+        Image identifiers in the same order as the X, y passed to
+        StratifiedGroupKFold (extensions are normalized automatically).
     clip_embedding_npz : str
-        중복 탐지에 사용할 CLIP 임베딩 파일 경로.
+        Path to the CLIP embedding file used for duplicate detection.
 
     Returns
     -------
     np.ndarray
-        image_keys와 같은 길이의 정수 group id 배열.
+        Integer group id array with the same length as image_keys.
     """
     key_to_group, n_duplicate_groups = find_exact_duplicate_groups(clip_embedding_npz)
 
     print(
-        f"[dedup_fold_utils] CLIP 임베딩에서 발견된 완전 동일 중복 그룹: "
-        f"{n_duplicate_groups}개"
+        f"[dedup_fold_utils] Exact-duplicate groups found in CLIP embeddings: "
+        f"{n_duplicate_groups}"
     )
 
     max_existing_group = max(key_to_group.values(), default=-1)
@@ -102,22 +105,23 @@ def build_group_ids(image_keys, clip_embedding_npz: str):
         if norm_key in key_to_group:
             group_ids.append(key_to_group[norm_key])
         else:
-            # CLIP 임베딩에 없는 이미지는 각자 고유 그룹으로 처리
+            # Images not present in the CLIP embeddings are each assigned
+            # their own unique group.
             group_ids.append(next_fallback_group)
             next_fallback_group += 1
             n_fallback += 1
 
     if n_fallback > 0:
         print(
-            f"[dedup_fold_utils] 경고: CLIP 임베딩에서 매칭되지 않은 이미지 "
-            f"{n_fallback}개는 각자 고유 그룹으로 처리됨."
+            f"[dedup_fold_utils] Warning: {n_fallback} image(s) not matched in the "
+            f"CLIP embeddings were each assigned their own unique group."
         )
 
     return np.array(group_ids)
 
 
 def summarize_group_sizes(group_ids: np.ndarray):
-    """디버그용: 그룹 크기 분포 요약."""
+    """Debug helper: summarize the distribution of group sizes."""
     unique, counts = np.unique(group_ids, return_counts=True)
     size_distribution = defaultdict(int)
     for c in counts:
