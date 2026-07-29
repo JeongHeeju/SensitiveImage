@@ -53,10 +53,6 @@ def normalize_img_key(path: str) -> str:
 
 
 class PrivacyDataset(Dataset):
-    """
-    [FIX] train=True일 때만 RandomHorizontalFlip(p=0.5) 적용.
-    (DenseNet/EfficientNet과 동일한 augmentation 정책으로 통일)
-    """
     def __init__(self, df, image_dir, label_col, processor, train=False):
         self.df = df.reset_index(drop=True)
         self.image_dir = Path(image_dir)
@@ -297,7 +293,7 @@ def main():
     parser.add_argument("--gold_csv",   type=str, required=True)
     parser.add_argument("--image_dir",  type=str, required=True)
     parser.add_argument("--clip_embedding_npz", type=str, required=True,
-                        help="중복 탐지에 사용할 CLIP 임베딩 npz 경로")
+                        help="Path to the CLIP embedding npz used for duplicate detection")
     parser.add_argument("--output_dir", type=str, default="results_clip_finetune_v5")
     parser.add_argument("--model_name", type=str,
                         default="openai/clip-vit-base-patch16")
