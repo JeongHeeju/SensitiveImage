@@ -23,7 +23,6 @@ from sklearn.dummy import DummyClassifier
 
 from dedup_fold_utils import build_group_ids
 
-# 실험 내용
 # 1. Majority / Random
 # 2. CLIP embedding + LogReg / LinearSVM / MLP
 # 3. DINOv2 embedding + LogReg / LinearSVM / MLP
