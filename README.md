@@ -1,4 +1,4 @@
-# Privacy Sensitivity Annotation Dataset for Social Media Images
+# A Multidimensional Dataset for Human-Perceived Privacy Sensitivity in Social Media Images
 
 This repository contains annotation labels and pre-computed image embeddings for the accompanying submitted AAAI-27 paper.
 
@@ -43,16 +43,16 @@ The columns are:
 ```text
 image_path              : Image identifier matching image_ids in the embeddings file.
 information_type        : 8-dimensional binary vector of privacy-relevant information types.
-identifiability_gold    : Ordinal score (0–2) for individual identifiability.
-location_gold           : Ordinal score (0–2) for privacy harm of disclosing the depicted location.
-activity_gold           : Ordinal score (0–2) for privacy harm of the depicted or implied activity.
+identifiability         : Ordinal score (0–2) for individual identifiability.
+location_sensitivity    : Ordinal score (0–2) for privacy harm of disclosing the depicted location.
+activity_sensitivity    : Ordinal score (0–2) for privacy harm of the depicted or implied activity.
 blur_presence           : Binary label for the presence of intentional privacy-protective modification.
-sharing_gold            : 6-dimensional binary vector of audience tiers with whom sharing is appropriate.
+sharing_allowance       : 6-dimensional binary vector of audience tiers with whom sharing is appropriate.
 high_level_category     : High-level retrieval category used during data collection.
 subcategory             : More specific retrieval subcategory.
 ```
 
-The `information_type` and `sharing_gold` fields are stored as string-encoded
+The `information_type` and `sharing_allowance` fields are stored as string-encoded
 integer lists (e.g., `"[1,0,1,0,0,0,0,0]"`) and can be parsed with
 `ast.literal_eval`.
  
@@ -65,7 +65,7 @@ The `information_type` vector follows this order:
 6. socio-cultural sensitive information
 7. risk- and crime-related information
 8. other
-The `sharing_gold` vector follows this order:
+The `sharing_allowance` vector follows this order:
 1. no sharing (not shared with anyone)
 2. close relations (e.g., family, partner)
 3. general relations (e.g., friends, colleagues)
