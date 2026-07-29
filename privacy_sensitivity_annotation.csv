@@ -1,4 +1,4 @@
-image_path,information_type,identifiability,location_sensitivity,activity_sensitivity,blur_presence,sharing_gold,high_level_category,subcategory
+image_path,information_type,identifiability_gold,location_gold,activity_gold,blur_presence,sharing_gold,high_level_category,subcategory
 img1,"[1,0,1,0,1,0,0,0]",2.0,1.0,1.0,0.0,"[0,1,1,0,0,0]",Location information,Public facilities
 img10,"[1,0,0,0,1,0,0,0]",1.0,1.0,1.0,0.0,"[0,1,1,0,0,0]",Location information,Public facilities
 img100,"[1,0,0,1,1,0,0,0]",1.0,1.0,0.0,1.0,"[0,1,0,0,0,0]",Body and appearance,Body exposure and sexual implication
