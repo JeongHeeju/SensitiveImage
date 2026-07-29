@@ -1,4 +1,4 @@
-# A Multidimensional Dataset for Human-Perceived Privacy Sensitivity in Social Media Images
+# Beyond Identifiability: A Multidimensional Dataset for Human-Perceived Privacy Sensitivity in Social Media Images
 
 This repository contains annotation labels and pre-computed image embeddings for the accompanying submitted AAAI-27 paper.
 
@@ -140,8 +140,7 @@ Experiments were run with Python 3.11, PyTorch 2.10.0 (CUDA 12.8), torchvision 0
 
 ## Data Release Policy
 
-Since the original images may contain personally sensitive information, the original images are not publicly released. For review purposes, we provide image embeddings and annotation labels for a limited subset of samples. The image embeddings and annotation labels needed to reproduce the 
-frozen-representation results are included in this repository. Original images are not released due to their sensitive content.
+The complete annotation table and pre-computed embeddings for all 4,999 records are included in this repository. The original images are not released because they may contain personally sensitive information. Ten anonymized sample images are provided solely for reviewer verification. Consequently, the frozen-representation results and baselines are fully reproducible from the released files, whereas the fine-tuning results require the original images and cannot be reproduced from the released files alone.
 
 ## Ethical Use
 
