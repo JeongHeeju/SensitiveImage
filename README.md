@@ -1,4 +1,4 @@
-# Privacy Sensitivity Annotation Dataset for Social Media Images
+# A Multidimensional Dataset for Human-Perceived Privacy Sensitivity in Social Media Images
 
 This repository contains annotation labels and pre-computed image embeddings for the accompanying submitted AAAI-27 paper.
 
