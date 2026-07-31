@@ -114,8 +114,8 @@ def merge_gold_and_features(gold_csv: str, feature_npz: str) -> pd.DataFrame:
     if len(merged) != len(gold_df):
         n_missing = len(gold_df) - len(merged)
         print(
-            f"[merge_gold_and_features] 경고: gold CSV {len(gold_df)}행 중 "
-            f"{n_missing}행이 embedding과 매칭되지 않아 제외됨 ({feature_npz})"
+            f"[merge_gold_and_features] Warning: of {len(gold_df)} gold CSV rows, "
+            f"{n_missing} were not matched to embeddings and were excluded ({feature_npz})"
         )
 
     return merged
