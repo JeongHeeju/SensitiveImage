@@ -304,7 +304,7 @@ def main():
     parser.add_argument("--gold_csv",    type=str, required=True)
     parser.add_argument("--image_dir",   type=str, required=True)
     parser.add_argument("--clip_embedding_npz", type=str, required=True,
-                        help="중복 탐지에 사용할 CLIP 임베딩 npz 경로")
+                        help="Path to the CLIP embedding npz used for duplicate detection")
     parser.add_argument("--output_dir",  type=str,
                         default="results_efficientnet_b0_v3")
     parser.add_argument("--epochs",      type=int,   default=10)
